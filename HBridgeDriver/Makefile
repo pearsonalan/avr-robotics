@@ -3,27 +3,33 @@ PROG := HBridgeDriver
 include ../Makefile.common
 
 CORE_OBJS= \
-	wiring.o wiring_analog.o wiring_shift.o wiring_pulse.o wiring_digital.o \
-	abi.o hooks.o new.o Stream.o HID.o Print.o CDC.o IPAddress.o USBCore.o Tone.o \
-	WInterrupts.o WMath.o WString.o \
-	HardwareSerial.o HardwareSerial0.o HardwareSerial1.o HardwareSerial2.o HardwareSerial3.o \
-	main.o
+	$(OBJDIR)/wiring.o $(OBJDIR)/wiring_analog.o $(OBJDIR)/wiring_shift.o \
+	$(OBJDIR)/wiring_pulse.o $(OBJDIR)/wiring_digital.o $(OBJDIR)/abi.o \
+	$(OBJDIR)/hooks.o $(OBJDIR)/new.o $(OBJDIR)/Stream.o \
+	$(OBJDIR)/Print.o $(OBJDIR)/CDC.o $(OBJDIR)/IPAddress.o $(OBJDIR)/USBCore.o \
+	$(OBJDIR)/Tone.o $(OBJDIR)/WInterrupts.o $(OBJDIR)/WMath.o $(OBJDIR)/WString.o \
+	$(OBJDIR)/HardwareSerial.o $(OBJDIR)/HardwareSerial0.o $(OBJDIR)/HardwareSerial1.o \
+	$(OBJDIR)/HardwareSerial2.o $(OBJDIR)/HardwareSerial3.o $(OBJDIR)/main.o \
+	$(OBJDIR)/Servo.o
 
-CORE_LIB=core.a
+CORE_LIB=$(OBJDIR)/ArduinoCore.a
 
-OBJS=$(PROG).o
-ELF=$(PROG).elf
-EEP=$(PROG).eep
-HEX=$(PROG).hex
+OBJS=$(OBJDIR)/$(PROG).o
+ELF=$(OBJDIR)/$(PROG).elf
+EEP=$(OBJDIR)/$(PROG).eep
+HEX=$(OBJDIR)/$(PROG).hex
 
 .PHONY: all clean build upload
 
 all: build
 
-build: $(ELF) $(EEP) $(HEX)
+build: $(OBJDIR) $(ELF) $(EEP) $(HEX)
+
+$(OBJDIR):
+	mkdir $(OBJDIR)
 
 $(ELF): $(OBJS) $(CORE_LIB)
-	$(CC) -Wall -Wextra -Os -Wl,--gc-sections -mmcu=atmega328p -o $(ELF) $(OBJS) $(CORE_LIB) -lm 
+	$(CC) -Wall -Wextra -Os -Wl,--gc-sections -mmcu=$(MCU) -o $(ELF) $(OBJS) $(CORE_LIB) -lm 
 
 $(EEP): $(ELF)
 	$(OBJCOPY) -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 $(ELF) $(EEP)
@@ -41,19 +47,19 @@ clean:
 	-rm $(ELF)
 	-rm $(EEP)
 	-rm $(HEX)
-	-rm *.d
+	-rm $(OBJDIR)/*.d
 
 upload: $(EEP) $(HEX)
-	$(AVRDUDE) -C$(ARDUINO_HOME)/hardware/tools/avr/etc/avrdude.conf -v -patmega328p -carduino -P$(PORT) -b$(BAUD) -D -Uflash:w:$(HEX):i 
+	$(AVRDUDE) -C$(AVRDUDE_CONF) -v -p$(MCU) -carduino -P$(PORT) -b$(BAUD) -D -Uflash:w:$(HEX):i 
 
-$(PROG).o: $(PROG).cpp
-
-%.o: %.cpp
+$(OBJDIR)/%.o: %.cpp
 	$(CPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) -o $@ $<
 
-%.o: $(ARDUINO_SRC)/%.cpp
+$(OBJDIR)/%.o: $(ARDUINO_SRC)/%.cpp
 	$(CPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) -o $@ $<
 
-%.o: $(ARDUINO_SRC)/%.c
+$(OBJDIR)/%.o: $(LIB_SERVO_SRC)/%.cpp
+	$(CPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) -o $@ $<
+
+$(OBJDIR)/%.o: $(ARDUINO_SRC)/%.c
 	$(CC) $(CFLAGS) $(DEFINES) $(INCLUDES) -o $@ $<
-

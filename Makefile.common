@@ -1,3 +1,5 @@
+ARCH=$(shell uname)
+
 ifndef PORT
   PORT := /dev/ttyUSB0
 endif
@@ -6,7 +8,14 @@ ifndef BAUD
   BAUD := 115200
 endif
 
-ARDUINO_HOME=/usr/local/arduino-1.6.4
+ifeq ($(ARCH),Darwin)
+  ARDUINO_HOME=/Applications/Arduino.app/Contents/Java
+else ifeq ($(ARCH), Linux)
+  ARDUINO_HOME=/usr/local/arduino-1.6.4
+else
+  $(error unsupported architecture)
+endif
+
 ARDUINO_TOOLS=$(ARDUINO_HOME)/hardware/tools
 AVR_HOME=$(ARDUINO_HOME)/hardware/tools/avr
 

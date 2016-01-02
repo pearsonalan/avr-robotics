@@ -29,7 +29,7 @@ $(OBJDIR):
 	mkdir $(OBJDIR)
 
 $(ELF): $(OBJS) $(CORE_LIB)
-	$(CC) -Wall -Wextra -Os -Wl,--gc-sections -mmcu=atmega328p -o $(ELF) $(OBJS) $(CORE_LIB) -lm 
+	$(CC) -Wall -Wextra -Os -Wl,--gc-sections -mmcu=$(MCU) -o $(ELF) $(OBJS) $(CORE_LIB) -lm 
 
 $(EEP): $(ELF)
 	$(OBJCOPY) -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 $(ELF) $(EEP)
@@ -53,7 +53,7 @@ clean:
 	-rm $(OBJDIR)/*.d
 
 upload: $(EEP) $(HEX)
-	$(AVRDUDE) -C$(ARDUINO_HOME)/hardware/tools/avr/etc/avrdude.conf -v -patmega328p -carduino -P$(PORT) -b$(BAUD) -D -Uflash:w:$(HEX):i 
+	$(AVRDUDE) -C$(AVRDUDE_CONF) -v -p$(MCU) -carduino -P$(PORT) -b$(BAUD) -D -Uflash:w:$(HEX):i 
 
 serial:
 	screen $(PORT) 9600
