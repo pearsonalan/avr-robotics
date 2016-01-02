@@ -1,28 +1,6 @@
 PROG := HBridgeDriver
 
-ifndef PORT
-  PORT := /dev/ttyUSB0
-endif
-
-ifndef BAUD
-  BAUD := 115200
-endif
-
-ARDUINO_HOME=/usr/local/arduino-1.6.4
-ARDUINO_TOOLS=$(ARDUINO_HOME)/hardware/tools
-
-CPP=$(ARDUINO_TOOLS)/avr/bin/avr-g++
-CC=$(ARDUINO_TOOLS)/avr/bin/avr-gcc
-AR=$(ARDUINO_TOOLS)/avr/bin/avr-ar
-OBJCOPY=$(ARDUINO_TOOLS)/avr/bin/avr-objcopy
-AVRDUDE=$(ARDUINO_TOOLS)/avr/bin/avrdude
-
-CFLAGS=-c -g -Os -Wall -Wextra -ffunction-sections -fdata-sections -MMD -mmcu=atmega328p
-CPPFLAGS=-c -g -Os -Wall -Wextra -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -mmcu=atmega328p
-DEFINES=-DF_CPU=16000000L -DARDUINO=10604 -DARDUINO_AVR_UNO -DARDUINO_ARCH_AVR
-INCLUDES=-I$(ARDUINO_HOME)/hardware/arduino/avr/cores/arduino -I$(ARDUINO_HOME)/hardware/arduino/avr/variants/standard
-
-ARDUINO_SRC=$(ARDUINO_HOME)/hardware/arduino/avr/cores/arduino
+include ../Makefile.common
 
 CORE_OBJS= \
 	wiring.o wiring_analog.o wiring_shift.o wiring_pulse.o wiring_digital.o \
