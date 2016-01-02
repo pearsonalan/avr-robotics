@@ -8,24 +8,26 @@ endif
 
 ARDUINO_HOME=/usr/local/arduino-1.6.4
 ARDUINO_TOOLS=$(ARDUINO_HOME)/hardware/tools
+AVR_HOME=$(ARDUINO_HOME)/hardware/tools/avr
 
-CPP=$(ARDUINO_TOOLS)/avr/bin/avr-g++
-CC=$(ARDUINO_TOOLS)/avr/bin/avr-gcc
-AR=$(ARDUINO_TOOLS)/avr/bin/avr-ar
-OBJCOPY=$(ARDUINO_TOOLS)/avr/bin/avr-objcopy
-AVRDUDE=$(ARDUINO_TOOLS)/avr/bin/avrdude
-AVRSIZE=$(ARDUINO_TOOLS)/avr/bin/avr-size
+ARDUINO_SRC=$(ARDUINO_HOME)/hardware/arduino/avr/cores/arduino
+LIB_SERVO_SRC=$(ARDUINO_HOME)/libraries/Servo/src/avr
+
+CPP=$(AVR_HOME)/bin/avr-g++
+CC=$(AVR_HOME)/bin/avr-gcc
+AR=$(AVR_HOME)/bin/avr-ar
+OBJCOPY=$(AVR_HOME)/bin/avr-objcopy
+AVRDUDE=$(AVR_HOME)/bin/avrdude
+AVRSIZE=$(AVR_HOME)/bin/avr-size
 
 MCU=atmega328p
 
 CFLAGS=-c -g -Os -Wall -Wextra -ffunction-sections -fdata-sections -MMD -mmcu=$(MCU)
 CPPFLAGS=-c -g -Os -Wall -Wextra -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -mmcu=$(MCU)
 DEFINES=-DF_CPU=16000000L -DARDUINO=10604 -DARDUINO_AVR_UNO -DARDUINO_ARCH_AVR
-INCLUDES=-I$(ARDUINO_HOME)/hardware/arduino/avr/cores/arduino -I$(ARDUINO_HOME)/hardware/arduino/avr/variants/standard -I$(ARDUINO_HOME)/libraries/Servo/src
+INCLUDES=-I$(ARDUINO_SRC) -I$(ARDUINO_HOME)/hardware/arduino/avr/variants/standard -I$(ARDUINO_HOME)/libraries/Servo/src
 
 OBJDIR=obj
 
-ARDUINO_SRC=$(ARDUINO_HOME)/hardware/arduino/avr/cores/arduino
-LIB_SERVO_SRC=$(ARDUINO_HOME)/libraries/Servo/src/avr
-
+AVRDUDE_CONF=$(AVR_HOME)/etc/avrdude.conf
 
